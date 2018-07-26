@@ -13,11 +13,11 @@ public class RequestLineTest {
         //instance 만들고
         //in 넣어주고
         RequestLine line = new RequestLine("GET /index.html HTTP/1.1");
-        assertThat(line.getMethod()).isEqualTo("GET");
+        assertThat(line.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(line.getPath()).isEqualTo("/index.html");
 
         line = new RequestLine("POST /index.html HTTP/1.1");
-        assertThat(line.getMethod()).isEqualTo("POST");
+        assertThat(line.getMethod()).isEqualTo(HttpMethod.POST);
     }
 
     @Test

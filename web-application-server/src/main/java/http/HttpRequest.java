@@ -32,7 +32,7 @@ public class HttpRequest {
                 line = br.readLine();
             }
 
-            if("POST".equals(requestLine.getMethod())){
+            if(getMethod().isPost()){
               //body length 만큼 읽어서 querryString!
                 String queryString = IOUtils.readData(br,
                         Integer.parseInt(headers.get("Content-Length")));
@@ -49,7 +49,7 @@ public class HttpRequest {
         return requestLine.getPath();
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return requestLine.getMethod();
     }
 

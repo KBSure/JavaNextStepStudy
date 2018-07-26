@@ -11,14 +11,14 @@ public class RequestLine {
 
     private Map<String, String> params;
     private String path;
-    private String method;
+    private HttpMethod method;
 
     public RequestLine(String line){
         log.debug("request line : {}", line);
         String[] tokens = line.split(" ");
-        method = tokens[0];
+        method = HttpMethod.valueOf(tokens[0]);
 
-        if("POST".equals(method)){
+        if(method.isPost()){
             path = tokens[1];
             return;
         }
@@ -41,7 +41,7 @@ public class RequestLine {
         return path;
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 }
