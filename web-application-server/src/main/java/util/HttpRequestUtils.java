@@ -33,20 +33,6 @@ public class HttpRequestUtils {
         return parseValues(cookies, ";");
     }
 
-    public static String getMethod(String line){
-        String[] splited = line.split(" ");
-        String method = splited[0].toUpperCase();
-        log.debug("method : {}", method);
-        return method;
-    }
-
-    public static String getUrl(String line){
-        String[] splited = line.split(" ");
-        String path = splited[1];
-        log.debug("request path : {}", path);
-        return path;
-    }
-
     private static Map<String, String> parseValues(String values, String separator) {
         if (Strings.isNullOrEmpty(values)) {
             return Maps.newHashMap();

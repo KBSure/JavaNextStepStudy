@@ -27,8 +27,12 @@ public class HttpRequest {
             line = br.readLine();
             while(!"".equals(line)){
                 log.debug("headers > {}", line);
-                String[] splited = line.split(":");
+                String[] splited = line.split(": "); //localhost:8080 처리는 못한다. 첫 ":"의 인덱스를 찾아서 subString으로 header 구성하는 것이 좋을지도.
                 headers.put(splited[0].trim(), splited[1].trim());
+//                int index = line.indexOf(":");
+//                String fieldName = line.substring(0, index).trim();
+//                String fiendValue = line.substring(index + 1).trim();
+//                headers.put(fieldName, fiendValue);
                 line = br.readLine();
             }
 
@@ -57,7 +61,7 @@ public class HttpRequest {
         return headers.get(fieldName);
     }
 
-    public String getParameter(String paramName){
+    public String getParam(String paramName){
         return params.get(paramName);
     }
 

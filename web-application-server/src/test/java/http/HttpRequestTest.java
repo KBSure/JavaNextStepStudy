@@ -18,7 +18,7 @@ public class HttpRequestTest {
         assertThat(request.getMethod()).isEqualTo(HttpMethod.GET);
         assertThat(request.getPath()).isEqualTo("/user/create");
         assertThat(request.getHeader("Connection")).isEqualTo("keep-alive");
-        assertThat(request.getParameter("userId")).isEqualTo("user");
+        assertThat(request.getParam("userId")).isEqualTo("user");
     }
 
     @Test
@@ -29,7 +29,14 @@ public class HttpRequestTest {
         assertThat(request.getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(request.getPath()).isEqualTo("/user/create");
         assertThat(request.getHeader("Connection")).isEqualTo("keep-alive");
-        assertThat(request.getParameter("userId")).isEqualTo("user");
+        assertThat(request.getParam("userId")).isEqualTo("user");
     }
 
+    @Test
+    public void isExistHostFieldInHeaders() throws FileNotFoundException {
+        InputStream in = new FileInputStream(new File(testDirectory + "Http_GET.txt"));
+        HttpRequest request = new HttpRequest(in);
+
+        assertThat(request.getHeader("Host")).isEqualTo("localhost:8080");
+    }
 }
