@@ -13,6 +13,8 @@ import webserver.RequestHandler;
 import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 public class HttpRequestUtils {
+    private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+
     /**
      * @param queryString은
      *            URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
@@ -27,8 +29,9 @@ public class HttpRequestUtils {
      *            값은 name1=value1; name2=value2 형식임
      * @return
      */
-
-    private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+    public static Map<String, String> parseCookies(String cookies) {
+        return parseValues(cookies, ";");
+    }
 
     public static String getMethod(String line){
         String[] splited = line.split(" ");
@@ -42,10 +45,6 @@ public class HttpRequestUtils {
         String path = splited[1];
         log.debug("request path : {}", path);
         return path;
-    }
-
-    public static Map<String, String> parseCookies(String cookies) {
-        return parseValues(cookies, ";");
     }
 
     private static Map<String, String> parseValues(String values, String separator) {
@@ -128,4 +127,5 @@ public class HttpRequestUtils {
             return "Pair [key=" + key + ", value=" + value + "]";
         }
     }
+
 }
