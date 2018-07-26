@@ -34,7 +34,7 @@ public class HttpResponse {
             response200Header();
             responseBody(body);
         } catch (IOException e) {
-            log.debug(e.getMessage());
+            log.error(e.getMessage());
         }
 
         //header에 필요 필드와 값을 넣어서 header를 dos에 쓸 수 있도록 이용!
@@ -56,7 +56,7 @@ public class HttpResponse {
             processHeaders();
             dos.writeBytes("\n");
         } catch (IOException e) {
-            log.debug(e.getMessage());
+            log.error(e.getMessage());
         }
 }
 

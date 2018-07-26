@@ -8,6 +8,7 @@ import java.util.Map;
 
 import db.DataBase;
 import http.HttpRequest;
+import http.HttpResponse;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class RequestHandler extends Thread {
     private Socket connection;
     private HttpRequest request;
     private String path;
+    private HttpResponse response;
 
 
     public RequestHandler(Socket connectionSocket) {
@@ -33,9 +35,9 @@ public class RequestHandler extends Thread {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             //index.html 요청하는 path
 
-            DataOutputStream dos = new DataOutputStream(out);
             request = new HttpRequest(in);
             path = request.getPath(); // 하위 패스가 없고 /를 요청했으면 index.html로 path를 변경해주는 메서드 생성하자.
+            response = new HttpResponse(out);
 
             if (path.startsWith("/user/create")) {
                     User user = new User(request.getParam("userId"),
@@ -44,14 +46,15 @@ public class RequestHandler extends Thread {
                             request.getParam("email"));
                     log.debug("User : {}", user);
                     DataBase.addUser(user);
-                    response302Header(dos, "/index.html");
+                    response.sendRedirect("/index.html");
                     return;
-            }else if(path.startsWith("/user/login")){
+            }else if("/user/login".equals(path)){
                     //로그인 비교 해서 로그인 성공실패 유무 처리
                     if(isUserMatch(request.getParam("userId"), request.getParam("password"))){
-                        response302HeaderWithLogined(dos, true, "/index.html");
+                        response.addHeader("Set-Cookie", "logined=true");
+                        response.sendRedirect("/index.html");
                     }else{
-                        response302HeaderWithLogined(dos, false, "/user/login_failed.html"); // 그냥 일반 302로 보내면 될 듯
+                        response.forwardWithPath("/user/login_failed.html", "txt/html");
                     }
                     return;
             }else if(path.startsWith("/user/list")){
@@ -68,17 +71,12 @@ public class RequestHandler extends Thread {
                             sb.append("</tr>");
                         }
                         sb.append("</table>");
-                        byte[] body = sb.toString().getBytes();
-                        response200Header(dos, body.length);
-                        responseBody(dos, body);
+                        response.forwardWithBody(sb.toString());
                     }else{
-                        response302Header(dos, "/user/login.html");
+                        response.sendRedirect("/user/login.html");
                     }
             }
-
-            byte[] body = Files.readAllBytes(new File("./webapp" + path).toPath());
-            response200Header(dos, body.length); //수정 필요
-            responseBody(dos, body);
+            response.forwardWithPath(path, request.getHeader("Accept"));
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -104,50 +102,4 @@ public class RequestHandler extends Thread {
             return false;
         }
     }
-
-
-//    private void response302Header(DataOutputStream dos, String path){
-//        try {
-//            dos.writeBytes("HTTP/1.1 302 OK \r\n");
-//            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-//            dos.writeBytes("Location: " + path +"\r\n");
-//            dos.writeBytes("\r\n");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void response302HeaderWithLogined(DataOutputStream dos, boolean isLogin, String path){
-//        try {
-//            dos.writeBytes("HTTP/1.1 302 OK \r\n");
-//            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-//            dos.writeBytes("Location: " + path +"\r\n");
-//            if(isLogin) {
-//                dos.writeBytes("Set-Cookie: logined=true\r\n");
-//            }
-//            dos.writeBytes("\r\n");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-//        try {
-//            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-//            dos.writeBytes("Content-Type: " + request.getHeader("Accept") + ";charset=utf-8\r\n");
-//            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-//            dos.writeBytes("\r\n");
-//        } catch (IOException e) {
-//            log.error(e.getMessage());
-//        }
-//    }
-//
-//    private void responseBody(DataOutputStream dos, byte[] body) {
-//        try {
-//            dos.write(body, 0, body.length);
-//            dos.flush();
-//        } catch (IOException e) {
-//            log.error(e.getMessage());
-//        }
-//    }
 }
