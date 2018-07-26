@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.RequestHandler;
@@ -42,6 +44,28 @@ public class HttpRequestUtils {
         return Arrays.stream(tokens).map(t -> getKeyValue(t, "=")).filter(p -> p != null)
                 .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
     }
+
+    public static boolean isUserMatch(String userId, String password){
+        User user = DataBase.findUserById(userId);
+        if(user == null){
+            log.debug("User Not Found!");
+            return false;
+        }else{
+            if(password.equals(user.getPassword())){
+                log.debug("User Match!");
+                return true;
+            }
+            log.debug("Password Mismatch!");
+            return false;
+        }
+    }
+
+    public static boolean isLogin(String cookieValue){
+        Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieValue);
+        return Boolean.parseBoolean(cookies.get("logined"));
+    }
+
+
 
     static Pair getKeyValue(String keyValue, String regex) {
         if (Strings.isNullOrEmpty(keyValue)) {
