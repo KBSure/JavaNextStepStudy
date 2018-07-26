@@ -10,12 +10,17 @@ import util.HttpRequestUtils;
 
 import java.util.Collection;
 
-public class ListUserController implements Controller {
+public class ListUserController extends AbstractController {
 
     private static Logger log = LoggerFactory.getLogger(ListUserController.class);
 
     @Override
-    public void service(HttpRequest request, HttpResponse response) {
+    protected void doPost(HttpRequest request, HttpResponse response) {
+
+    }
+
+    @Override
+    protected void doGet(HttpRequest request, HttpResponse response) {
         if(HttpRequestUtils.isLogin(request.getHeader("Cookie"))){
             Collection<User> users = DataBase.findAll();
             StringBuilder sb = new StringBuilder();
